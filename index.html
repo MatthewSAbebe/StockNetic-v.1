@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+  <body>
+
+  <header>
+   <div id="navBarContainer" class='col-full'>
+    <nav id="navBar">
+      <div class="homePageButtonContainer">
+        <button id="homePageButton">
+          <h1 id="appName">Stocknetic</h1>
+        </button>
+      </div>
+    </nav>
+   </div>
+  </header>
+
+  <main>
+
+    <div class="view" id="homeContainer" data-view="home">
+
+      <div id="logo">
+        <h2>STOCKNETIC</h2>
+        </div>
+    
+      <div  class="col-half" id="searchBoxContainer">
+        <label for="site-search">Search the site:</label>
+          <input type="input" placeholder="keywords" id="site-search" name="q">
+            <button id="search-button">Search</button>
+            </div>
+            
+              </div>
+
+   <div class="hidden" id="chartingContainer" data-view="charting">
+
+    <div class="row">
+
+      <div class="col-half" id="chartContainer">
+        <div>Chart</div>
+        <div id="dailyChartStyle">
+          <canvas id="dailyPriceChart"></canvas>
+        </div>
+      </div>
+
+      <div class="col-half" id="overviewDataContainer">
+        <div>Overview</div>
+      </div>
+
+    </div>
+
+    
+    <div class="row">
+      
+      <div class="col-half" id="ratioStatsContainer">
+        <div>Profile</div>
+      </div>
+
+        <div class="col-half" id="overviewContDataContainer">
+          <div>Overview (cont.)</div>
+        </div>
+
+   </div>
+  </main>
+
+  <div id="footerContainer" class="col-full">
+    <footer id="foo">
+      <p>Add your professional links and title here.</p>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script type="module" src="js/main.js"></script>
+  <script type="module" src="js/data.js"></script>
+  </body>
+</html>
