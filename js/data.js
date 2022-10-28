@@ -34,8 +34,20 @@ function getMatchingStockQuoteData(matchingStockTicker) {
   xhrMatchingStockQuoteDataRequest.responseType = 'json';
 
   xhrMatchingStockQuoteDataRequest.addEventListener('load', function () {
-    matchingStockQuoteDataResult = xhrMatchingStockQuoteDataRequest.response
-    console.log(matchingStockQuoteDataResult)
+    matchingStockQuoteDataResult = {
+      stockSymbol: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["01. symbol"],
+      stockPrice: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["05. price"],
+      stockPriceChange: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["09. change"],
+      stockPricePercentChange: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["09. change"],
+      }
+
+    var quoteDataListElement = document.querySelector('#quote-data-list')
+    console.log(quoteDataListElement)
+    var quoteDataListPriceElement = quoteDataListElement.firstElementChild;
+    console.log(quoteDataListPriceElement)
+    console.log(matchingStockQuoteDataResult.stockPrice)
+    quoteDataListPriceElement.innerHTML = matchingStockQuoteDataResult.stockPrice;
+    quoteDataListElement.appendChild(quoteDataListPriceElement)
   })
   xhrMatchingStockQuoteDataRequest.send()
 

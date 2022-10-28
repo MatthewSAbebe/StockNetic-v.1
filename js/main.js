@@ -35,12 +35,12 @@ function handleSearch() {
         }
     }
     
-    homeView.classList.remove('view')
-    chartingView.classList.remove('hidden')
-    homeView.classList.add('hidden')
-    chartingView.classList.add('view')
-    quoteStatsView.classList.remove('hidden')
-    quoteStatsView.classList.add('view')
+    // homeView.classList.remove('view')
+    // chartingView.classList.remove('hidden')
+    // homeView.classList.add('hidden')
+    // chartingView.classList.add('view')
+    // quoteStatsView.classList.remove('hidden')
+    // quoteStatsView.classList.add('view')
     
     getMatchingStockQuoteData(matchingStockTicker)
     getMatchingStockDailyPrices(matchingStockTicker);
@@ -48,43 +48,15 @@ function handleSearch() {
 }
 
 searchButton.addEventListener('click', handleSearch)
+searchButton.addEventListener('click', changeViewSearchToOverview)
 
-// function handleViewChange() {  
-//     // homeView.setAttribute('data-view', 'hidden')
-//     homeView.classList.remove('view')
-//     chartingView.classList.remove('hidden')
-//     homeView.classList.add('hidden')
-//     chartingView.classList.add('view')
-//     ratioStatsView.classList.remove('hidden')
-//     ratioStatsView.classList.add('view')
-
-// }
-
-// var chart = document.querySelector('#dailyPriceChart')
-
-// function displayDailyPriceChart() {
-//     console.log(chartLabels)
-//     console.log(closePrices)
-//     window.myChart = new Chart(chart, {
-//         type: 'line',
-//         data: {
-//           labels: chartLabels.slice(0, 5).reverse(),
-//           datasets: [{
-//             label: 'Close Price by Day',
-//             data: closePrices.splice(0, 2),
-//             backgroundColor: 'rgba(44, 130, 201, 1)',
-//             borderColor: 'rgba(44, 130, 201, 1)',
-//             borderWidth: 1
-//           }]
-//         },
-//         options: {
-//           maintainAspectRatio: false,
-//           responsive: true,
-//           reversed: true
-//         }
-//       })
-
-//     //   window.myChart.appendChild(chart)
-// }
+function changeViewSearchToOverview() {
+    homeView.classList.remove('view')
+    chartingView.classList.remove('hidden')
+    homeView.classList.add('hidden')
+    chartingView.classList.add('view')
+    quoteStatsView.classList.remove('hidden')
+    quoteStatsView.classList.add('view')
+}
 
 export { matchingStock }
