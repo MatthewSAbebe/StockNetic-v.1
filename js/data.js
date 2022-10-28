@@ -1,13 +1,15 @@
 var currentDate;
 var stockNameResults;
 var matchingStockResult;
+var matchingStockQuoteDataResult;
 var matchingStockResultProfile;
 var closePrices = [];
 var chartLabels = [];
 
+//This is something you need to get better at, returning variables from custom functions. Those values are used in complex, multi-step calculations.
 function getCurrentDate () {
     currentDate = new Date();
-    // console.log(currentDate)
+    return currentDate;
 }
 
 getCurrentDate()
@@ -26,6 +28,20 @@ function getStockNames() {
 
 getStockNames()
 
+function getMatchingStockQuoteData(matchingStockTicker) {
+  var xhrMatchingStockQuoteDataRequest = new XMLHttpRequest();
+  xhrMatchingStockQuoteDataRequest.open('GET', `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${matchingStockTicker}&apikey=pbAveFNWpMw8DCRXcRLi4EFE2ukYHMNN`);
+  xhrMatchingStockQuoteDataRequest.responseType = 'json';
+
+  xhrMatchingStockQuoteDataRequest.addEventListener('load', function () {
+    matchingStockQuoteDataResult = xhrMatchingStockQuoteDataRequest.response
+    console.log(matchingStockQuoteDataResult)
+  })
+  xhrMatchingStockQuoteDataRequest.send()
+
+  return matchingStockQuoteDataResult;
+}
+
 function getMatchingStockDailyPrices(matchingStock) {
     var xhrMatchingStockDailyPricesDataRequest = new XMLHttpRequest();
     xhrMatchingStockDailyPricesDataRequest.open('GET', `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${matchingStock}&apikey=EBZ2O8GQQ9CA3ECX`)
@@ -41,6 +57,7 @@ function getMatchingStockDailyPrices(matchingStock) {
         }
 
         var chart = document.querySelector('#dailyPriceChart')
+            // eslint-disable-next-line no-undef
             window.myChart = new Chart(chart, {
                 type: 'line',
                 data: {
@@ -76,5 +93,5 @@ function getMatchingStockOverviewData(matchingStock) {
     xhrMatchingStockOverviewDataRequest.send()
 }
 
-export { stockNameResults, getMatchingStockDailyPrices, getMatchingStockOverviewData }
+export { currentDate, stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData }
 

@@ -1,8 +1,8 @@
-import { stockNameResults, getMatchingStockDailyPrices, getMatchingStockOverviewData } from "./data.js"
+import { stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData } from "./data.js"
 
 var homeView = document.querySelector('#homeContainer')
 var chartingView = document.querySelector('#chartingContainer')
-var ratioStatsView = document.getElementById('ratioStatsContainer')
+var quoteStatsView = document.querySelector('#quoteDataContainer')
 var searchTerm = '';
 var matchingStock;
 var matchingStockTicker;
@@ -39,9 +39,10 @@ function handleSearch() {
     chartingView.classList.remove('hidden')
     homeView.classList.add('hidden')
     chartingView.classList.add('view')
-    ratioStatsView.classList.remove('hidden')
-    ratioStatsView.classList.add('view')
+    quoteStatsView.classList.remove('hidden')
+    quoteStatsView.classList.add('view')
     
+    getMatchingStockQuoteData(matchingStockTicker)
     getMatchingStockDailyPrices(matchingStockTicker);
     getMatchingStockOverviewData(matchingStockTicker);
 }
