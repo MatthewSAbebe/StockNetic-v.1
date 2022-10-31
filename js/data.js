@@ -66,16 +66,18 @@ function getMatchingStockDailyPrices(matchingStock) {
         matchingStockWeeklyPriceData.push(matchingStockResult)
         var stockData = matchingStockWeeklyPriceData[0];
         for (var key in stockData) {
-          closePrices.push(stockData[key]['4. close']);
-          chartLabels.push(key);
+          data.push({Date: Date.parse(key), Value: Number.parseFloat(stockData[key]['4. close'])})
+          // closePrices.push(stockData[key]['4. close']);
+          // chartLabels.push(key);
         }
 
-        for (let i = 0; i < chartLabels.length; i++) {
-          for (let k = 0; k < closePrices.length; k++) {
-            data.push({Date: Date.parse(chartLabels[i].toString()), Value: Number.parseFloat(closePrices[k])})
-        }
-      }
+    //     for (let i = 0; i < chartLabels.length; i++) {
+    //       for (let k = 0; k < closePrices.length; k++) {
+    //         data.push({Date: Date.parse(chartLabels[i].toString()), Value: Number.parseFloat(closePrices[k])})
+    //   }
+    // }
         console.log(data)
+        
 
           var root = am5.Root.new("dailyPriceChart");
       
