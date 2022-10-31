@@ -5,6 +5,8 @@ var matchingStockQuoteDataResult;
 var matchingStockResultProfile;
 var closePrices = [];
 var chartLabels = [];
+var closePricesChartingArr = [];
+var data = [];
 
 //This is something you need to get better at, returning variables from custom functions. Those values are used in complex, multi-step calculations.
 function getCurrentDate () {
@@ -68,27 +70,61 @@ function getMatchingStockDailyPrices(matchingStock) {
           chartLabels.push(key);
         }
 
-        var chart = document.querySelector('#dailyPriceChart')
-            // eslint-disable-next-line no-undef
-            window.myChart = new Chart(chart, {
-                type: 'line',
-                data: {
-                  labels: chartLabels.slice(0, 5).reverse(),
-                  datasets: [{
-                    label: 'Close Price by Day',
-                    data: closePrices.splice(0, 5),
-                    backgroundColor: 'rgba(44, 130, 201, 1)',
-                    borderColor: 'rgba(44, 130, 201, 1)',
-                    borderWidth: 1
-                  }]
-                },
-                options: {
-                  maintainAspectRatio: false,
-                  responsive: true,
-                  reversed: true
-                }
+        for (let i = 0; i < chartLabels.length; i++) {
+          for (let k = 0; k < closePrices.length; k++) {
+            data.push({Date: Date.parse(chartLabels[i].toString()), Value: Number.parseFloat(closePrices[k])})
+        }
+      }
+        console.log(data)
+
+          var root = am5.Root.new("dailyPriceChart");
+      
+          // root.setThemes([
+          //   am5themes_Animated.new(root)
+          // ]);
+      
+          var stockChart = root.container.children.push(
+          am5stock.StockChart.new(root, {})
+          );
+          
+          var mainPanel = stockChart.panels.push(am5stock.StockPanel.new(root, {
+            wheelY: "zoomX",
+            panX: true,
+            panY: true
+          }));
+      
+            var valueAxis = mainPanel.yAxes.push(am5xy.ValueAxis.new(root, {
+              renderer: am5xy.AxisRendererY.new(root, {})
+            }));
+            
+            var dateAxis = mainPanel.xAxes.push(am5xy.DateAxis.new(root, {
+              baseInterval: {
+                timeUnit: "day",
+                count: 1
+              },
+              renderer: am5xy.AxisRendererX.new(root, {})
+            }));
+      
+            var valueSeries = mainPanel.series.push(am5xy.LineSeries.new(root, {
+                name: "STCK",
+                valueXField: "Date",
+                valueYField: "Value",
+                xAxis: dateAxis,
+                yAxis: valueAxis,
+                legendValueText: "{valueY}"
               })
+            );
+            
+            valueSeries.data.setAll(data);
+      
+            stockChart.set("stockSeries", valueSeries);
+      
+            var valueLegend = mainPanel.plotContainer.children.push(am5stock.StockLegend.new(root, {
+              stockChart: stockChart
+            }));
+            valueLegend.data.setAll([valueSeries]);
     })
+
     xhrMatchingStockDailyPricesDataRequest.send()
 }
 
@@ -105,5 +141,5 @@ function getMatchingStockOverviewData(matchingStock) {
     xhrMatchingStockOverviewDataRequest.send()
 }
 
-export { currentDate, stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData }
+export { currentDate, stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData, closePrices, chartLabels, closePricesChartingArr, data }
 

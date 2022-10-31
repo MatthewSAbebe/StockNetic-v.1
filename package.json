@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@amcharts/amcharts5": "^5.2.31",
     "http-server": "^14.1.1"
   },
   "devDependencies": {

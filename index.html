@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>My Website</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+     <!-- <script>
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      // Define the chart to be drawn.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Element');
+      data.addColumn('number', 'Percentage');
+      data.addRows([
+        ['Nitrogen', 0.78],
+        ['Oxygen', 0.21],
+        ['Other', 0.01]
+      ]);
+
+      // Instantiate and draw the chart.
+      var chart = new google.visualization.PieChart(document.getElementById('dailyPriceChart'));
+      chart.draw(data, null);
+    }
+  </script> -->
     <link rel="stylesheet" href="css/styles.css">
   </head>
   <body>
@@ -43,9 +64,9 @@
 
       <div class="col-half" id="chartContainer">
         <div>Chart</div>
-        <div id="dailyChartStyle">
-          <canvas id="dailyPriceChart"></canvas>
-        </div>
+        <div id="dailyPriceChart"></div>
+        <!-- <div id="dailyChartStyle"> -->
+        <!-- </div> -->
       </div>
 
       <div class="col-half" id="overviewDataContainer">
@@ -80,7 +101,9 @@
     </footer>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/stock.js"></script>
 	<script type="module" src="js/main.js"></script>
   <script type="module" src="js/data.js"></script>
   </body>

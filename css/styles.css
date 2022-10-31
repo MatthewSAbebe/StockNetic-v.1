@@ -81,17 +81,18 @@ transform: translateX(-50%) translateY(-50%);
   border: 1px solid black;
 }
 
-#chartContainer {
-  background-color: white;
-  height: 300px;
-}
+/* #chartContainer { */
+  /* background-color: white; */
+  /* height: 220px; */
+  /* width: 500px; */
+/* } */
 
-#dailyChartStyle {
+#dailyPriceChart {
   display: block;
   box-sizing: border-box;
   margin: 0 auto;
   height: 220px;
-  width: 500px;
+  width: 400px;
   margin-top: 20px;
   margin-bottom: 20px;
   border: solid 2px black;
