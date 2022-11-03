@@ -87,20 +87,21 @@ transform: translateX(-50%) translateY(-50%);
   /* width: 500px; */
 /* } */
 
-#dailyPriceChart {
+#stockChart {
   display: block;
+  background-color: white;
   box-sizing: border-box;
   margin: 0 auto;
-  height: 220px;
-  width: 400px;
+  height: 250px;
+  width: 500px;
   margin-top: 20px;
   margin-bottom: 20px;
   border: solid 2px black;
 }
 
-#overviewDataContainer {
+/* #overviewDataContainer {
   background-color: blue;
-}
+} */
 
 #quoteDataContainer {
   background-color: aqua;

@@ -42,58 +42,6 @@ function handleSearch() {
     getMatchingStockOverviewData(matchingStockTicker);
 }
 
-// function displayLineChart() {
-//   console.log(data)
-//   console.log(closePricesChartingArr)
-//   // var data = []
-//     var root = am5.Root.new("dailyPriceChart");
-
-//     // root.setThemes([
-//     //   am5themes_Animated.new(root)
-//     // ]);
-
-//     var stockChart = root.container.children.push(
-//     am5stock.StockChart.new(root, {})
-//     );
-    
-//     var mainPanel = stockChart.panels.push(am5stock.StockPanel.new(root, {
-//       wheelY: "zoomX",
-//       panX: true,
-//       panY: true
-//     }));
-
-//       var valueAxis = mainPanel.yAxes.push(am5xy.ValueAxis.new(root, {
-//         renderer: am5xy.AxisRendererY.new(root, {})
-//       }));
-      
-//       var dateAxis = mainPanel.xAxes.push(am5xy.DateAxis.new(root, {
-//         baseInterval: {
-//           timeUnit: "day",
-//           count: 1
-//         },
-//         renderer: am5xy.AxisRendererX.new(root, {})
-//       }));
-
-//       var valueSeries = mainPanel.series.push(am5xy.LineSeries.new(root, {
-//           name: "STCK",
-//           valueXField: "date",
-//           valueYField: "price",
-//           xAxis: dateAxis,
-//           yAxis: valueAxis,
-//           legendValueText: "{valueY}"
-//         })
-//       );
-      
-//       valueSeries.data.setAll(data);
-
-//       stockChart.set("stockSeries", valueSeries);
-
-//       var valueLegend = mainPanel.plotContainer.children.push(am5stock.StockLegend.new(root, {
-//         stockChart: stockChart
-//       }));
-//       valueLegend.data.setAll([valueSeries]);
-// }
-
 searchButton.addEventListener('click', handleSearch)
 
 searchButton.addEventListener('click', changeViewSearchToOverview)
