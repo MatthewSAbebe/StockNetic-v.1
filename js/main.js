@@ -1,10 +1,8 @@
 import { stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData, closePricesChartingArr, data } from "./data.js"
-// import * as am5 from "@amcharts/amcharts5";
-// import * as am5xy from "@amcharts/amcharts5/xy";
 
 var homeView = document.querySelector('#homeContainer')
-var chartingView = document.querySelector('#chartingContainer')
-var quoteStatsView = document.querySelector('#quoteDataContainer')
+// var chartingView = document.querySelector('#chartingContainer')
+var summaryView = document.querySelector('#summaryContainer')
 var searchTerm = '';
 var matchingStock;
 var matchingStockTicker;
@@ -40,19 +38,15 @@ function handleSearch() {
     getMatchingStockQuoteData(matchingStockTicker)
     getMatchingStockDailyPrices(matchingStockTicker);
     getMatchingStockOverviewData(matchingStockTicker);
+
+
+    //Default landing page after searching for a security.
+    homeView.classList.remove('view')
+    homeView.classList.add('hidden')
+    summaryView.classList.remove('hidden')
+    summaryView.classList.add('view')
 }
 
 searchButton.addEventListener('click', handleSearch)
-
-searchButton.addEventListener('click', changeViewSearchToOverview)
-
-function changeViewSearchToOverview() {
-    homeView.classList.remove('view')
-    chartingView.classList.remove('hidden')
-    homeView.classList.add('hidden')
-    chartingView.classList.add('view')
-    quoteStatsView.classList.remove('hidden')
-    quoteStatsView.classList.add('view')
-}
 
 export { matchingStock }

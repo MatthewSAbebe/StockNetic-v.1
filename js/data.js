@@ -1,14 +1,19 @@
+// import { ColorSet } from "./@amcharts/amcharts5.js";
+import { matchingStock } from "./main.js";
+
 var currentDate;
 var stockNameResults;
 var matchingStockResult;
 var matchingStockQuoteDataResult;
+var stockPriceChangeNumber;
+var stockPricePercentChangeNumber;
 var matchingStockResultProfile;
 var closePrices = [];
 var chartLabels = [];
 var closePricesChartingArr = [];
 var data = [];
+var quoteDataListNameElement;
 
-//This is something you need to get better at, returning variables from custom functions. Those values are used in complex, multi-step calculations.
 function getCurrentDate () {
     currentDate = new Date();
     return currentDate;
@@ -26,33 +31,69 @@ function getStockNames() {
         stockNameResults = xhrStockNameDataRequest.response['results']
     })
     xhrStockNameDataRequest.send()
-}
-
-getStockNames()
+  }
+  
+  getStockNames()
 
 function getMatchingStockQuoteData(matchingStockTicker) {
+  
   var xhrMatchingStockQuoteDataRequest = new XMLHttpRequest();
   xhrMatchingStockQuoteDataRequest.open('GET', `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${matchingStockTicker}&apikey=pbAveFNWpMw8DCRXcRLi4EFE2ukYHMNN`);
   xhrMatchingStockQuoteDataRequest.responseType = 'json';
+
+  function addNumberSignToStockPriceChangeNumber(matchingStockObj) {
+    if (parseInt(matchingStockObj.stockPriceChange) > 0) {
+        stockPriceChangeNumber = `+${matchingStockObj.stockPriceChange}`
+        return stockPriceChangeNumber;
+      } else if (parseInt(matchingStockObj.stockPriceChange) < 0) {
+        stockPriceChangeNumber = `-${matchingStockObj.stockPriceChange}`
+        return stockPriceChangeNumber;
+      } else {
+        stockPriceChangeNumber = matchingStockObj.stockPriceChange
+        return stockPriceChangeNumber;
+      }
+    }
+
+  function addNumberSignToStockPricePercentChangeNumber(matchingStockObj) {
+      if (parseInt(matchingStockObj.stockPricePercentChange) > 0) {
+        stockPricePercentChangeNumber = `+${matchingStockObj.stockPricePercentChange}`
+        return stockPricePercentChangeNumber;
+      } else if (parseInt(matchingStockObj.stockPricePercentChange) < 0) {
+        stockPricePercentChangeNumber = `-${matchingStockObj.stockPricePercentChange}`
+        return stockPricePercentChangeNumber;
+      } else {
+        stockPricePercentChangeNumber = matchingStockObj.stockPricePercentChange
+        return stockPricePercentChangeNumber
+      }
+    }
+
+    function appendQuoteData() {
+      console.log('data type:', typeof stockPriceChangeNumber, 'stockPriceChangeNumber:', stockPriceChangeNumber)
+      console.log('data type:', typeof stockPricePercentChangeNumber, 'stockPricePercentChangeNumer:', stockPricePercentChangeNumber)
+      var quoteDataListElement = document.querySelector('#quote-data-list');
+      quoteDataListNameElement = quoteDataListElement.firstElementChild;
+      var quoteDataListPriceElement = quoteDataListNameElement.nextElementSibling;
+      quoteDataListNameElement.innerHTML = matchingStock.name + " " + `(${matchingStock.ticker})`;
+      quoteDataListElement.appendChild(quoteDataListNameElement)
+      var quotePrice = parseInt(matchingStockQuoteDataResult.stockPrice).toFixed(2);
+      quoteDataListPriceElement.innerHTML = `<h2 id="quotePrice">${quotePrice}</h2><sub><p id="quotePriceSubscript">(At close)</p></sub>&nbsp&nbsp<h3 id="stockPriceChangeNum">${stockPriceChangeNumber}</h3> (${stockPricePercentChangeNumber})`;
+      quoteDataListElement.appendChild(quoteDataListPriceElement)
+      }
 
   xhrMatchingStockQuoteDataRequest.addEventListener('load', function () {
     matchingStockQuoteDataResult = {
       stockSymbol: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["01. symbol"],
       stockPrice: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["05. price"],
       stockPriceChange: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["09. change"],
-      stockPricePercentChange: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["09. change"],
-      }
+      stockPricePercentChange: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["10. change percent"]
+    }
+  
+    addNumberSignToStockPriceChangeNumber(matchingStockQuoteDataResult);
+    addNumberSignToStockPricePercentChangeNumber(matchingStockQuoteDataResult);
+    appendQuoteData();
 
-    var quoteDataListElement = document.querySelector('#quote-data-list')
-    // console.log(quoteDataListElement)
-    var quoteDataListPriceElement = quoteDataListElement.firstElementChild;
-    // console.log(quoteDataListPriceElement)
-    // console.log(matchingStockQuoteDataResult.stockPrice)
-    quoteDataListPriceElement.innerHTML = matchingStockQuoteDataResult.stockPrice;
-    quoteDataListElement.appendChild(quoteDataListPriceElement)
   })
   xhrMatchingStockQuoteDataRequest.send()
-
   return matchingStockQuoteDataResult;
 }
 
@@ -76,19 +117,23 @@ function getMatchingStockDailyPrices(matchingStock) {
             am5themes_Animated.new(root)
           ]);
 
-        var stockChart = root.container.children.push(am5stock.StockChart.new(root, {}));
+        var stockChart = root.container.children.push(am5stock.StockChart.new(root, {
+          stockPositiveColor: am5.color(0x999999),
+          stockNegativeColor: am5.color(0x000000)
+        }));
           
         var mainPanel = stockChart.panels.push(am5stock.StockPanel.new(root, {
           wheelY: "zoomX",
-          panX: true,
-          panY: true,
+          panX: false,
+          panY: false,
           height: am5.percent(70)
         }));
       
         var valueAxis = mainPanel.yAxes.push(am5xy.ValueAxis.new(root, {
           renderer: am5xy.AxisRendererY.new(root, {
             pan: "zoom",
-            opposite: true
+            opposite: true,
+            baseValue: 0
           }),
           tooltip: am5.Tooltip.new(root, {
             animationDuration:200
@@ -96,7 +141,11 @@ function getMatchingStockDailyPrices(matchingStock) {
           numberFormat: "#,###.00",
           extraTooltipPrecision: 2
         }));
-          
+
+        // var ColorSet = am5.ColorSet.new(root, {
+
+        // });
+   
         var dateAxis = mainPanel.xAxes.push(am5xy.GaplessDateAxis.new(root, {
           baseInterval: {
             timeUnit: "day",
@@ -105,26 +154,37 @@ function getMatchingStockDailyPrices(matchingStock) {
           renderer: am5xy.AxisRendererX.new(root, {}),
           tooltip: am5.Tooltip.new(root, {
             animationDuration:200
-          })
+          }),
+          // strokeSettings: {
+          //   stroke: ColorSet.getIndex(0)
+          // },
+          // fillSettings: {
+          //   fill: ColorSet.getIndex(0),
+          // },
+          // bulletSettings: {
+          //   fill: ColorSet.getIndex(0)
+          // }
         }));
   
         var valueSeries = mainPanel.series.push(am5xy.LineSeries.new(root, {
-            name: "STCK",
+            name: `${matchingStock}`,
             valueXField: "Date",
             valueYField: "Value",
             xAxis: dateAxis,
             yAxis: valueAxis,
-            legendValueText: "{valueY}"
+            legendValueText: "{valueY}",
+            fill: am5.color(0x095256),
+            stroke: am5.color(0x095256)
           }));
           
         valueSeries.data.setAll(data);
     
         stockChart.set("stockSeries", valueSeries);
-    
-        // var valueLegend = mainPanel.topPlotContainer.children.push(am5stock.StockLegend.new(root, {
-        //   stockChart: stockChart
-        // }));
-        // valueLegend.data.setAll([valueSeries]);
+
+        var valueLegend = mainPanel.plotContainer.children.push(am5stock.StockLegend.new(root, {
+          stockChart: stockChart
+        }));
+        valueLegend.data.setAll([valueSeries]);
 
         mainPanel.set("cursor", am5xy.XYCursor.new(root, {
           yAxis: valueAxis,
@@ -133,38 +193,32 @@ function getMatchingStockDailyPrices(matchingStock) {
           snapToSeriesBy: "y!"
         }))
 
-        // var scrollbar = mainPanel.set("scrollbarX", am5xy.XYChartScrollbar.new(root, {
-        //   orientation: "horizontal",
-        //   height: 50
-        // }));
-        // stockChart.toolsContainer.children.push(scrollbar);
+        // var stockChartModal = document.getElementsByClassName("am5-modal")
+        // console.log(stockChartModal)
+        // stockChartModal.remove()
         
-        // var sbDateAxis = scrollbar.chart.xAxes.push(am5xy.GaplessDateAxis.new(root, {
-        //   baseInterval: {
-        //     timeUnit: "day",
-        //     count: 1
-        //   },
-        //   renderer: am5xy.AxisRendererX.new(root, {})
-        // }));
-        
-        // var sbValueAxis = scrollbar.chart.yAxes.push(am5xy.ValueAxis.new(root, {
-        //   renderer: am5xy.AxisRendererY.new(root, {})
-        // }));
-        
-        // var sbSeries = scrollbar.chart.series.push(am5xy.LineSeries.new(root, {
-        //   valueYField: "Value",
-        //   valueXField: "Date",
-        //   xAxis: sbDateAxis,
-        //   yAxis: sbValueAxis
-        // }));
-        
-        // sbSeries.fills.template.setAll({
-        //   visible: true,
-        //   fillOpacity: 0.3
-        // });
-        
-        // sbSeries.data.setAll(data);
-    })
+        var stockChartParentElement = document.querySelector('#stockChart');
+        console.log(stockChartParentElement)
+
+        // domtraversal
+        var stockChartChildrenElements = stockChartParentElement.childNodes[0];
+        console.log(stockChartChildrenElements)
+
+        stockChartChildrenElements.removeChild(stockChartChildrenElements.childNodes[4])
+        console.log(stockChartChildrenElements)
+
+        // var stockChartToolTips = stockChartChildrenElements.childNodes[4]
+        // stockChartToolTips.removeChild()
+        // console.log(stockChartToolTips)
+
+        // var tooltipForRemoval = stockChartParentTooltipElements.childNodes[]
+        // var removeChartLinkTextNode = stockChartParentElement.childNodes[0].ATTRIBUTE_NODE
+
+        // stockChartParentElement.childNodes[0].removeChild(2)
+
+        // var stockChartElementChildNodes = stockChartParentElement.childNodes[0]
+        // console.log(stockChartElementChildNodes)
+    });
 
     xhrMatchingStockDailyPricesDataRequest.send()
 }
@@ -177,7 +231,9 @@ function getMatchingStockOverviewData(matchingStock) {
     
     xhrMatchingStockOverviewDataRequest.addEventListener('load', function () {
         matchingStockResultProfile = xhrMatchingStockOverviewDataRequest.response;
-        // console.log(matchingStockResultProfile)
+        console.log(matchingStockResultProfile)
+
+        // var quoteDataListNameElement = quoteDataListElement.firstElementChild
     })
     xhrMatchingStockOverviewDataRequest.send()
 }
