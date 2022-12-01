@@ -9,7 +9,7 @@ var matchingStockTicker;
 
 var searchButton = document.getElementById('search-button')
 
-function handleSearch() {
+async function handleSearch() {
  
     var stockNamesArr = stockNameResults;
 
@@ -35,8 +35,7 @@ function handleSearch() {
         }
     }
     
-    getMatchingStockQuoteData(matchingStockTicker)
-    getMatchingStockDailyPrices(matchingStockTicker);
+    await getMatchingStockQuoteData(matchingStockTicker), getMatchingStockDailyPrices(matchingStockTicker), 
     getMatchingStockOverviewData(matchingStockTicker);
 
 

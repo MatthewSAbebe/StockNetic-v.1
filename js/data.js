@@ -5,9 +5,10 @@ var currentDate;
 var stockNameResults;
 var matchingStockResult;
 var matchingStockQuoteDataResult;
+var matchingStockOverviewDataResult;
 var stockPriceChangeNumber;
 var stockPricePercentChangeNumber;
-var matchingStockResultProfile;
+// var matchingStockResultProfile;
 var closePrices = [];
 var chartLabels = [];
 var closePricesChartingArr = [];
@@ -42,11 +43,11 @@ function getMatchingStockQuoteData(matchingStockTicker) {
   xhrMatchingStockQuoteDataRequest.responseType = 'json';
 
   function addNumberSignToStockPriceChangeNumber(matchingStockObj) {
-    if (parseInt(matchingStockObj.stockPriceChange) > 0) {
-        stockPriceChangeNumber = `+${matchingStockObj.stockPriceChange}`
+    if (matchingStockObj.stockPriceChange > 0) {
+        stockPriceChangeNumber = matchingStockObj.stockPriceChange
         return stockPriceChangeNumber;
-      } else if (parseInt(matchingStockObj.stockPriceChange) < 0) {
-        stockPriceChangeNumber = `-${matchingStockObj.stockPriceChange}`
+      } else if (matchingStockObj.stockPriceChange < 0) {
+        stockPriceChangeNumber = matchingStockObj.stockPriceChange
         return stockPriceChangeNumber;
       } else {
         stockPriceChangeNumber = matchingStockObj.stockPriceChange
@@ -55,10 +56,10 @@ function getMatchingStockQuoteData(matchingStockTicker) {
     }
 
   function addNumberSignToStockPricePercentChangeNumber(matchingStockObj) {
-      if (parseInt(matchingStockObj.stockPricePercentChange) > 0) {
+      if (matchingStockObj.stockPricePercentChange > 0) {
         stockPricePercentChangeNumber = `+${matchingStockObj.stockPricePercentChange}`
         return stockPricePercentChangeNumber;
-      } else if (parseInt(matchingStockObj.stockPricePercentChange) < 0) {
+      } else if (matchingStockObj.stockPricePercentChange < 0) {
         stockPricePercentChangeNumber = `-${matchingStockObj.stockPricePercentChange}`
         return stockPricePercentChangeNumber;
       } else {
@@ -76,7 +77,7 @@ function getMatchingStockQuoteData(matchingStockTicker) {
       quoteDataListNameElement.innerHTML = matchingStock.name + " " + `(${matchingStock.ticker})`;
       quoteDataListElement.appendChild(quoteDataListNameElement)
       var quotePrice = parseInt(matchingStockQuoteDataResult.stockPrice).toFixed(2);
-      quoteDataListPriceElement.innerHTML = `<h2 id="quotePrice">${quotePrice}</h2><sub><p id="quotePriceSubscript">(At close)</p></sub>&nbsp&nbsp<h3 id="stockPriceChangeNum">${stockPriceChangeNumber}</h3> (${stockPricePercentChangeNumber})`;
+      quoteDataListPriceElement.innerHTML =`<h2 id="quotePrice">${quotePrice}</h2><sub><p id="quotePriceSubscript">(At close)</p></sub><h3 id="stockPriceChangeNum">${stockPriceChangeNumber}</h3> (${stockPricePercentChangeNumber})`;
       quoteDataListElement.appendChild(quoteDataListPriceElement)
       }
 
@@ -111,113 +112,7 @@ function getMatchingStockDailyPrices(matchingStock) {
         }
         // console.log(data)
         
-        var root = am5.Root.new("stockChart");
-
-          root.setThemes([
-            am5themes_Animated.new(root)
-          ]);
-
-        var stockChart = root.container.children.push(am5stock.StockChart.new(root, {
-          stockPositiveColor: am5.color(0x999999),
-          stockNegativeColor: am5.color(0x000000)
-        }));
-          
-        var mainPanel = stockChart.panels.push(am5stock.StockPanel.new(root, {
-          wheelY: "zoomX",
-          panX: false,
-          panY: false,
-          height: am5.percent(70)
-        }));
-      
-        var valueAxis = mainPanel.yAxes.push(am5xy.ValueAxis.new(root, {
-          renderer: am5xy.AxisRendererY.new(root, {
-            pan: "zoom",
-            opposite: true,
-            baseValue: 0
-          }),
-          tooltip: am5.Tooltip.new(root, {
-            animationDuration:200
-          }),
-          numberFormat: "#,###.00",
-          extraTooltipPrecision: 2
-        }));
-
-        // var ColorSet = am5.ColorSet.new(root, {
-
-        // });
-   
-        var dateAxis = mainPanel.xAxes.push(am5xy.GaplessDateAxis.new(root, {
-          baseInterval: {
-            timeUnit: "day",
-            count: 1
-          },
-          renderer: am5xy.AxisRendererX.new(root, {}),
-          tooltip: am5.Tooltip.new(root, {
-            animationDuration:200
-          }),
-          // strokeSettings: {
-          //   stroke: ColorSet.getIndex(0)
-          // },
-          // fillSettings: {
-          //   fill: ColorSet.getIndex(0),
-          // },
-          // bulletSettings: {
-          //   fill: ColorSet.getIndex(0)
-          // }
-        }));
-  
-        var valueSeries = mainPanel.series.push(am5xy.LineSeries.new(root, {
-            name: `${matchingStock}`,
-            valueXField: "Date",
-            valueYField: "Value",
-            xAxis: dateAxis,
-            yAxis: valueAxis,
-            legendValueText: "{valueY}",
-            fill: am5.color(0x095256),
-            stroke: am5.color(0x095256)
-          }));
-          
-        valueSeries.data.setAll(data);
-    
-        stockChart.set("stockSeries", valueSeries);
-
-        var valueLegend = mainPanel.plotContainer.children.push(am5stock.StockLegend.new(root, {
-          stockChart: stockChart
-        }));
-        valueLegend.data.setAll([valueSeries]);
-
-        mainPanel.set("cursor", am5xy.XYCursor.new(root, {
-          yAxis: valueAxis,
-          xAxis: dateAxis,
-          snapToSeries: [valueSeries],
-          snapToSeriesBy: "y!"
-        }))
-
-        // var stockChartModal = document.getElementsByClassName("am5-modal")
-        // console.log(stockChartModal)
-        // stockChartModal.remove()
         
-        var stockChartParentElement = document.querySelector('#stockChart');
-        console.log(stockChartParentElement)
-
-        // domtraversal
-        var stockChartChildrenElements = stockChartParentElement.childNodes[0];
-        console.log(stockChartChildrenElements)
-
-        stockChartChildrenElements.removeChild(stockChartChildrenElements.childNodes[4])
-        console.log(stockChartChildrenElements)
-
-        // var stockChartToolTips = stockChartChildrenElements.childNodes[4]
-        // stockChartToolTips.removeChild()
-        // console.log(stockChartToolTips)
-
-        // var tooltipForRemoval = stockChartParentTooltipElements.childNodes[]
-        // var removeChartLinkTextNode = stockChartParentElement.childNodes[0].ATTRIBUTE_NODE
-
-        // stockChartParentElement.childNodes[0].removeChild(2)
-
-        // var stockChartElementChildNodes = stockChartParentElement.childNodes[0]
-        // console.log(stockChartElementChildNodes)
     });
 
     xhrMatchingStockDailyPricesDataRequest.send()
@@ -230,11 +125,28 @@ function getMatchingStockOverviewData(matchingStock) {
     xhrMatchingStockOverviewDataRequest.responseType = 'json';
     
     xhrMatchingStockOverviewDataRequest.addEventListener('load', function () {
-        matchingStockResultProfile = xhrMatchingStockOverviewDataRequest.response;
-        console.log(matchingStockResultProfile)
-
-        // var quoteDataListNameElement = quoteDataListElement.firstElementChild
+      console.log(xhrMatchingStockOverviewDataRequest.response)
+        matchingStockOverviewDataResult = {
+          marketCapitalization: xhrMatchingStockOverviewDataRequest.response["MarketCapitalization"],
+          earningsPerShare: xhrMatchingStockOverviewDataRequest.response["EPS"],
+          priceEarningsRatio: xhrMatchingStockOverviewDataRequest.response["PERatio"],
+          fiftyTwoWeekHigh: xhrMatchingStockOverviewDataRequest.response["52WeekHigh"],
+          fiftyTwoWeekLow: xhrMatchingStockOverviewDataRequest.response["52WeekLow"]
+        }
+        console.log(matchingStockOverviewDataResult)
+        var marketCap = matchingStockOverviewDataResult.marketCapitalization;
+        console.log('data type:', typeof marketCap, 'data value:', marketCap)
+        
+        var overviewDataListContainerEl = document.querySelector("#overview-data-list")
+        var overviewDataListEl = overviewDataListContainerEl.firstElementChild;
+        var marketCapListEl = document.createElement("li")
+        marketCapListEl.innerHTML = matchingStockOverviewDataResult.marketCapitalization;
+        
+        overviewDataListEl.appendChild(marketCapListEl)
+        //next add 52 week range, calculate with high and low but do not display them
     })
+
+
     xhrMatchingStockOverviewDataRequest.send()
 }
 
