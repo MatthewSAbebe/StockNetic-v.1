@@ -1,15 +1,15 @@
-import { stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData } from "./data.js"
+import { stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData, closePricesChartingArr, data } from "./data.js"
 
 var homeView = document.querySelector('#homeContainer')
-var chartingView = document.querySelector('#chartingContainer')
-var quoteStatsView = document.querySelector('#quoteDataContainer')
+// var chartingView = document.querySelector('#chartingContainer')
+var summaryView = document.querySelector('#summaryContainer')
 var searchTerm = '';
 var matchingStock;
 var matchingStockTicker;
 
 var searchButton = document.getElementById('search-button')
 
-function handleSearch() {
+async function handleSearch() {
  
     var stockNamesArr = stockNameResults;
 
@@ -35,56 +35,17 @@ function handleSearch() {
         }
     }
     
-    homeView.classList.remove('view')
-    chartingView.classList.remove('hidden')
-    homeView.classList.add('hidden')
-    chartingView.classList.add('view')
-    quoteStatsView.classList.remove('hidden')
-    quoteStatsView.classList.add('view')
-    
-    getMatchingStockQuoteData(matchingStockTicker)
-    getMatchingStockDailyPrices(matchingStockTicker);
+    await getMatchingStockQuoteData(matchingStockTicker), getMatchingStockDailyPrices(matchingStockTicker), 
     getMatchingStockOverviewData(matchingStockTicker);
+
+
+    //Default landing page after searching for a security.
+    homeView.classList.remove('view')
+    homeView.classList.add('hidden')
+    summaryView.classList.remove('hidden')
+    summaryView.classList.add('view')
 }
 
 searchButton.addEventListener('click', handleSearch)
-
-// function handleViewChange() {  
-//     // homeView.setAttribute('data-view', 'hidden')
-//     homeView.classList.remove('view')
-//     chartingView.classList.remove('hidden')
-//     homeView.classList.add('hidden')
-//     chartingView.classList.add('view')
-//     ratioStatsView.classList.remove('hidden')
-//     ratioStatsView.classList.add('view')
-
-// }
-
-// var chart = document.querySelector('#dailyPriceChart')
-
-// function displayDailyPriceChart() {
-//     console.log(chartLabels)
-//     console.log(closePrices)
-//     window.myChart = new Chart(chart, {
-//         type: 'line',
-//         data: {
-//           labels: chartLabels.slice(0, 5).reverse(),
-//           datasets: [{
-//             label: 'Close Price by Day',
-//             data: closePrices.splice(0, 2),
-//             backgroundColor: 'rgba(44, 130, 201, 1)',
-//             borderColor: 'rgba(44, 130, 201, 1)',
-//             borderWidth: 1
-//           }]
-//         },
-//         options: {
-//           maintainAspectRatio: false,
-//           responsive: true,
-//           reversed: true
-//         }
-//       })
-
-//     //   window.myChart.appendChild(chart)
-// }
 
 export { matchingStock }

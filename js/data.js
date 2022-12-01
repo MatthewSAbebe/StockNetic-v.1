@@ -1,12 +1,20 @@
+// import { ColorSet } from "./@amcharts/amcharts5.js";
+import { matchingStock } from "./main.js";
+
 var currentDate;
 var stockNameResults;
 var matchingStockResult;
 var matchingStockQuoteDataResult;
-var matchingStockResultProfile;
+var matchingStockOverviewDataResult;
+var stockPriceChangeNumber;
+var stockPricePercentChangeNumber;
+// var matchingStockResultProfile;
 var closePrices = [];
 var chartLabels = [];
+var closePricesChartingArr = [];
+var data = [];
+var quoteDataListNameElement;
 
-//This is something you need to get better at, returning variables from custom functions. Those values are used in complex, multi-step calculations.
 function getCurrentDate () {
     currentDate = new Date();
     return currentDate;
@@ -24,21 +32,69 @@ function getStockNames() {
         stockNameResults = xhrStockNameDataRequest.response['results']
     })
     xhrStockNameDataRequest.send()
-}
-
-getStockNames()
+  }
+  
+  getStockNames()
 
 function getMatchingStockQuoteData(matchingStockTicker) {
+  
   var xhrMatchingStockQuoteDataRequest = new XMLHttpRequest();
   xhrMatchingStockQuoteDataRequest.open('GET', `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${matchingStockTicker}&apikey=pbAveFNWpMw8DCRXcRLi4EFE2ukYHMNN`);
   xhrMatchingStockQuoteDataRequest.responseType = 'json';
 
+  function addNumberSignToStockPriceChangeNumber(matchingStockObj) {
+    if (matchingStockObj.stockPriceChange > 0) {
+        stockPriceChangeNumber = matchingStockObj.stockPriceChange
+        return stockPriceChangeNumber;
+      } else if (matchingStockObj.stockPriceChange < 0) {
+        stockPriceChangeNumber = matchingStockObj.stockPriceChange
+        return stockPriceChangeNumber;
+      } else {
+        stockPriceChangeNumber = matchingStockObj.stockPriceChange
+        return stockPriceChangeNumber;
+      }
+    }
+
+  function addNumberSignToStockPricePercentChangeNumber(matchingStockObj) {
+      if (matchingStockObj.stockPricePercentChange > 0) {
+        stockPricePercentChangeNumber = `+${matchingStockObj.stockPricePercentChange}`
+        return stockPricePercentChangeNumber;
+      } else if (matchingStockObj.stockPricePercentChange < 0) {
+        stockPricePercentChangeNumber = `-${matchingStockObj.stockPricePercentChange}`
+        return stockPricePercentChangeNumber;
+      } else {
+        stockPricePercentChangeNumber = matchingStockObj.stockPricePercentChange
+        return stockPricePercentChangeNumber
+      }
+    }
+
+    function appendQuoteData() {
+      console.log('data type:', typeof stockPriceChangeNumber, 'stockPriceChangeNumber:', stockPriceChangeNumber)
+      console.log('data type:', typeof stockPricePercentChangeNumber, 'stockPricePercentChangeNumer:', stockPricePercentChangeNumber)
+      var quoteDataListElement = document.querySelector('#quote-data-list');
+      quoteDataListNameElement = quoteDataListElement.firstElementChild;
+      var quoteDataListPriceElement = quoteDataListNameElement.nextElementSibling;
+      quoteDataListNameElement.innerHTML = matchingStock.name + " " + `(${matchingStock.ticker})`;
+      quoteDataListElement.appendChild(quoteDataListNameElement)
+      var quotePrice = parseInt(matchingStockQuoteDataResult.stockPrice).toFixed(2);
+      quoteDataListPriceElement.innerHTML =`<h2 id="quotePrice">${quotePrice}</h2><sub><p id="quotePriceSubscript">(At close)</p></sub><h3 id="stockPriceChangeNum">${stockPriceChangeNumber}</h3> (${stockPricePercentChangeNumber})`;
+      quoteDataListElement.appendChild(quoteDataListPriceElement)
+      }
+
   xhrMatchingStockQuoteDataRequest.addEventListener('load', function () {
-    matchingStockQuoteDataResult = xhrMatchingStockQuoteDataRequest.response
-    console.log(matchingStockQuoteDataResult)
+    matchingStockQuoteDataResult = {
+      stockSymbol: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["01. symbol"],
+      stockPrice: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["05. price"],
+      stockPriceChange: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["09. change"],
+      stockPricePercentChange: xhrMatchingStockQuoteDataRequest.response["Global Quote"]["10. change percent"]
+    }
+  
+    addNumberSignToStockPriceChangeNumber(matchingStockQuoteDataResult);
+    addNumberSignToStockPricePercentChangeNumber(matchingStockQuoteDataResult);
+    appendQuoteData();
+
   })
   xhrMatchingStockQuoteDataRequest.send()
-
   return matchingStockQuoteDataResult;
 }
 
@@ -52,31 +108,13 @@ function getMatchingStockDailyPrices(matchingStock) {
         matchingStockWeeklyPriceData.push(matchingStockResult)
         var stockData = matchingStockWeeklyPriceData[0];
         for (var key in stockData) {
-          closePrices.push(stockData[key]['4. close']);
-          chartLabels.push(key);
+          data.push({Date: Date.parse(key), Value: Number.parseFloat(stockData[key]['4. close'])})
         }
+        // console.log(data)
+        
+        
+    });
 
-        var chart = document.querySelector('#dailyPriceChart')
-            // eslint-disable-next-line no-undef
-            window.myChart = new Chart(chart, {
-                type: 'line',
-                data: {
-                  labels: chartLabels.slice(0, 5).reverse(),
-                  datasets: [{
-                    label: 'Close Price by Day',
-                    data: closePrices.splice(0, 5),
-                    backgroundColor: 'rgba(44, 130, 201, 1)',
-                    borderColor: 'rgba(44, 130, 201, 1)',
-                    borderWidth: 1
-                  }]
-                },
-                options: {
-                  maintainAspectRatio: false,
-                  responsive: true,
-                  reversed: true
-                }
-              })
-    })
     xhrMatchingStockDailyPricesDataRequest.send()
 }
 
@@ -87,11 +125,30 @@ function getMatchingStockOverviewData(matchingStock) {
     xhrMatchingStockOverviewDataRequest.responseType = 'json';
     
     xhrMatchingStockOverviewDataRequest.addEventListener('load', function () {
-        matchingStockResultProfile = xhrMatchingStockOverviewDataRequest.response;
-        console.log(matchingStockResultProfile)
+      console.log(xhrMatchingStockOverviewDataRequest.response)
+        matchingStockOverviewDataResult = {
+          marketCapitalization: xhrMatchingStockOverviewDataRequest.response["MarketCapitalization"],
+          earningsPerShare: xhrMatchingStockOverviewDataRequest.response["EPS"],
+          priceEarningsRatio: xhrMatchingStockOverviewDataRequest.response["PERatio"],
+          fiftyTwoWeekHigh: xhrMatchingStockOverviewDataRequest.response["52WeekHigh"],
+          fiftyTwoWeekLow: xhrMatchingStockOverviewDataRequest.response["52WeekLow"]
+        }
+        console.log(matchingStockOverviewDataResult)
+        var marketCap = matchingStockOverviewDataResult.marketCapitalization;
+        console.log('data type:', typeof marketCap, 'data value:', marketCap)
+        
+        var overviewDataListContainerEl = document.querySelector("#overview-data-list")
+        var overviewDataListEl = overviewDataListContainerEl.firstElementChild;
+        var marketCapListEl = document.createElement("li")
+        marketCapListEl.innerHTML = matchingStockOverviewDataResult.marketCapitalization;
+        
+        overviewDataListEl.appendChild(marketCapListEl)
+        //next add 52 week range, calculate with high and low but do not display them
     })
+
+
     xhrMatchingStockOverviewDataRequest.send()
 }
 
-export { currentDate, stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData }
+export { currentDate, stockNameResults, getMatchingStockQuoteData, getMatchingStockDailyPrices, getMatchingStockOverviewData, closePrices, chartLabels, closePricesChartingArr, data }
 
